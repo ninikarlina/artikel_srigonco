@@ -1,13 +1,12 @@
 import { Article } from './types';
 import { prisma } from './prisma';
-import { Article as PrismaArticle } from '@prisma/client';
 
 export async function getArticles(): Promise<Article[]> {
   const articles = await prisma.article.findMany({
     orderBy: { publishedAt: 'desc' },
   });
   
-  return articles.map((article: PrismaArticle) => ({
+  return articles.map((article) => ({
     ...article,
     tags: JSON.parse(article.tags),
     publishedAt: article.publishedAt.toISOString(),
