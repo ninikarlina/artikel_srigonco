@@ -394,7 +394,7 @@ export default function EditArticlePage({ params }: PageProps) {
                     <input
                       ref={fileInputRef}
                       type="file"
-                      accept="image/jpeg,image/png,image/gif,image/webp"
+                      accept="image/jpeg,image/jpg,image/png,image/webp"
                       onChange={handleImageUpload}
                       className="hidden"
                       disabled={isUploading}
