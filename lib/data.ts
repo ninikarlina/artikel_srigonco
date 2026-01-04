@@ -6,9 +6,11 @@ export async function getArticles(): Promise<Article[]> {
     orderBy: { publishedAt: 'desc' },
   });
   
-  return articles.map((article: any) => ({
+  return articles.map((article) => ({
     ...article,
     tags: JSON.parse(article.tags),
+    publishedAt: article.publishedAt.toISOString(),
+    updatedAt: article.updatedAt.toISOString(),
   }));
 }
 
@@ -22,6 +24,8 @@ export async function getArticleBySlug(slug: string): Promise<Article | null> {
   return {
     ...article,
     tags: JSON.parse(article.tags),
+    publishedAt: article.publishedAt.toISOString(),
+    updatedAt: article.updatedAt.toISOString(),
   };
 }
 
@@ -35,6 +39,8 @@ export async function getArticleById(id: string): Promise<Article | null> {
   return {
     ...article,
     tags: JSON.parse(article.tags),
+    publishedAt: article.publishedAt.toISOString(),
+    updatedAt: article.updatedAt.toISOString(),
   };
 }
 
@@ -57,6 +63,8 @@ export async function createArticle(
   return {
     ...article,
     tags: JSON.parse(article.tags),
+    publishedAt: article.publishedAt.toISOString(),
+    updatedAt: article.updatedAt.toISOString(),
   };
 }
 
@@ -80,6 +88,8 @@ export async function updateArticle(
   return {
     ...article,
     tags: JSON.parse(article.tags),
+    publishedAt: article.publishedAt.toISOString(),
+    updatedAt: article.updatedAt.toISOString(),
   };
 }
 
@@ -91,6 +101,8 @@ export async function deleteArticle(id: string): Promise<Article | null> {
     return {
       ...article,
       tags: JSON.parse(article.tags),
+      publishedAt: article.publishedAt.toISOString(),
+      updatedAt: article.updatedAt.toISOString(),
     };
   } catch {
     return null;

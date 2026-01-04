@@ -22,7 +22,7 @@ interface ArticleCardProps {
   excerpt: string;
   author: string;
   date: string;
-  imageUrl?: string;
+  imageUrl?: string | null;
   tags: string[];
   slug: string;
 }
@@ -32,11 +32,11 @@ export function ArticleCard({ title, excerpt, author, date, imageUrl, tags, slug
     <Link href={`/artikel/${slug}`}>
       <article className="group bg-white border-2 border-gray-200 rounded-lg overflow-hidden hover:border-blue-600 hover:shadow-xl transition-all duration-300 h-full flex flex-col md:flex-row">
         {imageUrl && (
-          <div className="md:w-1/3 h-48 md:h-auto overflow-hidden border-b-2 md:border-b-0 md:border-r-2 border-gray-200 shrink-0">
+          <div className="md:w-1/3 h-48 md:h-56 overflow-hidden border-b-2 md:border-b-0 md:border-r-2 border-gray-200 shrink-0 relative">
             <img 
               src={imageUrl} 
               alt={title} 
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
             />
           </div>
         )}

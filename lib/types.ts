@@ -7,7 +7,7 @@ export interface Article {
   author: string;
   publishedAt: string;
   updatedAt: string;
-  imageUrl?: string;
+  imageUrl: string | null;
   tags: string[];
 }
 
