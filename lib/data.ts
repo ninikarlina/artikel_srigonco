@@ -6,7 +6,7 @@ export async function getArticles(): Promise<Article[]> {
     orderBy: { publishedAt: 'desc' },
   });
   
-  return articles.map((article) => ({
+  return articles.map((article: typeof articles[0]) => ({
     ...article,
     tags: JSON.parse(article.tags),
     publishedAt: article.publishedAt.toISOString(),
