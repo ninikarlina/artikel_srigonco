@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getArticleById, updateArticle, deleteArticle } from '@/lib/data';
-import { unlink } from 'fs/promises';
-import path from 'path';
+import { del } from '@vercel/blob';
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -32,6 +31,27 @@ export async function PUT(request: Request, { params }: RouteParams) {
   try {
     const { id } = await params;
     const data = await request.json();
+    
+    // Get current article to check if image is being changed
+    const currentArticle = await getArticleById(id);
+    if (!currentArticle) {
+      return NextResponse.json(
+        { error: 'Article not found' },
+        { status: 404 }
+      );
+    }
+    
+    // If image is being updated and old image exists in Blob, delete it
+    if (data.imageUrl && currentArticle.imageUrl && 
+        data.imageUrl !== currentArticle.imageUrl &&
+        currentArticle.imageUrl.includes('vercel-storage.com')) {
+      try {
+        await del(currentArticle.imageUrl);
+      } catch (error) {
+        console.error('Failed to delete old image from Blob:', error);
+      }
+    }
+    
     const updated = await updateArticle(id, data);
     
     if (!updated) {
@@ -62,17 +82,12 @@ export async function DELETE(request: Request, { params }: RouteParams) {
       );
     }
     
-    // Delete associated image file if it exists
-    if (deletedArticle.imageUrl && deletedArticle.imageUrl.startsWith('/images/articles/')) {
+    // Delete associated image from Vercel Blob if it exists
+    if (deletedArticle.imageUrl && deletedArticle.imageUrl.includes('vercel-storage.com')) {
       try {
-        const filename = deletedArticle.imageUrl.split('/').pop();
-        if (filename) {
-          const filePath = path.join(process.cwd(), 'public', 'images', 'articles', filename);
-          await unlink(filePath);
-        }
-      } catch (fileError) {
-        // Log error but don't fail the request if image deletion fails
-        console.error('Failed to delete image file:', fileError);
+        await del(deletedArticle.imageUrl);
+      } catch (error) {
+        console.error('Failed to delete image from Blob:', error);
       }
     }
     
