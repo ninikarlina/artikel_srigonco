@@ -84,11 +84,11 @@ export function Carousel({ articles }: CarouselProps) {
                   ))}
                 </div>
                 
-                <h2 className="text-5xl font-bold mb-4 leading-tight">
+                <h2 className="text-2xl md:text-5xl font-bold mb-4 leading-tight">
                   {article.title}
                 </h2>
                 
-                <p className="text-xl text-gray-200 mb-6 line-clamp-2">
+                <p className="text-base md:text-xl text-gray-200 mb-6 line-clamp-2">
                   {article.excerpt}
                 </p>
                 
@@ -104,7 +104,7 @@ export function Carousel({ articles }: CarouselProps) {
 
                 <Link
                   href={`/artikel/${article.slug}`}
-                  className="inline-block px-8 py-3 bg-white text-gray-900 font-semibold rounded-lg hover:bg-gray-100 transition-colors"
+                  className="inline-block px-4 py-2 md:px-8 md:py-3 text-sm md:text-base bg-white text-gray-900 font-semibold rounded-lg hover:bg-gray-100 transition-colors"
                 >
                   Baca Selengkapnya
                 </Link>

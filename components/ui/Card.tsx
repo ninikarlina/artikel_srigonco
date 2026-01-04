@@ -51,10 +51,10 @@ export function ArticleCard({ title, excerpt, author, date, imageUrl, tags, slug
               </span>
             ))}
           </div>
-          <h3 className="text-2xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors">
+          <h3 className="text-lg md:text-2xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors">
             {title}
           </h3>
-          <p className="text-gray-600 mb-4 line-clamp-2 flex-1">{excerpt}</p>
+          <p className="text-sm md:text-base text-gray-600 mb-4 line-clamp-2 flex-1">{excerpt}</p>
           <div className="flex items-center justify-between text-sm text-gray-500 pt-4 border-t border-gray-200">
             <span className="font-medium">{author}</span>
             <span>{new Date(date).toLocaleDateString('id-ID', { 

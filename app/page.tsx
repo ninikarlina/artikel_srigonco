@@ -5,8 +5,8 @@ import { Sidebar } from '@/components/ui/Sidebar';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 
-export default function HomePage() {
-  const articles = getArticles();
+export default async function HomePage() {
+  const articles = await getArticles();
   const featuredArticles = articles.slice(0, 3);
   const recentArticles = articles.slice(0, 6);
 
@@ -24,7 +24,7 @@ export default function HomePage() {
             <div className="lg:col-span-2">
               {/* Section Title */}
               <div className="border-b-2 border-gray-900 mb-8">
-                <h2 className="text-3xl font-bold text-gray-900 pb-4 uppercase tracking-wide">
+                <h2 className="text-xl md:text-3xl font-bold text-gray-900 pb-4 uppercase tracking-wide">
                   Berita Terbaru
                 </h2>
               </div>

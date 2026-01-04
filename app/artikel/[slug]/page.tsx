@@ -6,6 +6,8 @@ import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { ArrowLeftIcon, CalendarIcon, UserIcon, TagIcon } from '@heroicons/react/24/outline';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import remarkBreaks from 'remark-breaks';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -13,8 +15,8 @@ interface PageProps {
 
 export default async function ArticlePage({ params }: PageProps) {
   const { slug } = await params;
-  const article = getArticleBySlug(slug);
-  const allArticles = getArticles();
+  const article = await getArticleBySlug(slug);
+  const allArticles = await getArticles();
 
   if (!article) {
     notFound();
@@ -64,18 +66,18 @@ export default async function ArticlePage({ params }: PageProps) {
                   </div>
 
                   {/* Title */}
-                  <h1 className="text-4xl font-bold text-gray-900 mb-4 leading-tight">
+                  <h1 className="text-2xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight">
                     {article.title}
                   </h1>
 
                   {/* Meta Info */}
-                  <div className="flex items-center space-x-6 pb-6 mb-6 border-b-2 border-gray-200 text-gray-600">
-                    <div className="flex items-center space-x-2">
-                      <UserIcon className="h-5 w-5" />
+                  <div className="flex items-center space-x-4 md:space-x-6 pb-6 mb-6 border-b-2 border-gray-200 text-sm md:text-base text-gray-600">
+                    <div className="flex items-center space-x-1 md:space-x-2">
+                      <UserIcon className="h-4 w-4 md:h-5 md:w-5" />
                       <span className="font-medium">{article.author}</span>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <CalendarIcon className="h-5 w-5" />
+                    <div className="flex items-center space-x-1 md:space-x-2">
+                      <CalendarIcon className="h-4 w-4 md:h-5 md:w-5" />
                       <span>
                         {new Date(article.publishedAt).toLocaleDateString('id-ID', {
                           year: 'numeric',
@@ -87,11 +89,11 @@ export default async function ArticlePage({ params }: PageProps) {
                   </div>
 
                   {/* Content with Typography */}
-                  <div className="prose prose-lg max-w-none
+                  <div className="prose prose-sm md:prose-lg max-w-none
                     prose-headings:font-bold prose-headings:text-gray-900
-                    prose-h1:text-3xl prose-h1:border-b-2 prose-h1:border-gray-200 prose-h1:pb-4 prose-h1:mb-6
-                    prose-h2:text-2xl prose-h2:mt-8 prose-h2:mb-4
-                    prose-h3:text-xl prose-h3:mt-6 prose-h3:mb-3
+                    prose-h1:text-xl md:prose-h1:text-3xl prose-h1:border-b-2 prose-h1:border-gray-200 prose-h1:pb-4 prose-h1:mb-6
+                    prose-h2:text-lg md:prose-h2:text-2xl prose-h2:mt-8 prose-h2:mb-4
+                    prose-h3:text-base md:prose-h3:text-xl prose-h3:mt-6 prose-h3:mb-3
                     prose-p:text-gray-700 prose-p:leading-relaxed prose-p:mb-4
                     prose-a:text-blue-600 prose-a:font-medium hover:prose-a:text-blue-700
                     prose-strong:text-gray-900 prose-strong:font-semibold
@@ -102,7 +104,21 @@ export default async function ArticlePage({ params }: PageProps) {
                     prose-code:bg-gray-100 prose-code:px-2 prose-code:py-1 prose-code:rounded prose-code:text-sm
                     prose-pre:bg-gray-900 prose-pre:text-gray-100 prose-pre:p-4 prose-pre:rounded-lg prose-pre:overflow-x-auto
                   ">
-                    <ReactMarkdown>{article.content}</ReactMarkdown>
+                    <ReactMarkdown 
+                      remarkPlugins={[remarkGfm, remarkBreaks]}
+                      components={{
+                        a: ({ href, children }) => (
+                          <a 
+                            href={href} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:text-blue-800 underline"
+                          >
+                            {children}
+                          </a>
+                        ),
+                      }}
+                    >{article.content}</ReactMarkdown>
                   </div>
                 </div>
               </article>

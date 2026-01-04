@@ -12,7 +12,7 @@ export function Footer() {
               Portal berita dan informasi terkini seputar kegiatan, potensi, dan perkembangan Desa Srigonco.
             </p>
             <p className="text-sm text-gray-500">
-              © {new Date().getFullYear()} Tim KKN Kelompok 3
+              © {new Date().getFullYear()} Tim KKN Kelompok 2
             </p>
           </div>
 

@@ -1,19 +1,38 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { Article } from '@/lib/types';
 import { Button } from '@/components/ui/Button';
-import { Modal } from '@/components/ui/Modal';
-import { ArticleForm } from '@/components/admin/ArticleForm';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
-import { PencilIcon, TrashIcon, PlusIcon } from '@heroicons/react/24/outline';
+import { PencilIcon, TrashIcon, PlusIcon, ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
 
 export default function AdminPage() {
+  const router = useRouter();
   const [articles, setArticles] = useState<Article[]>([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingArticle, setEditingArticle] = useState<Article | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  // Check authentication
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/api/auth/check');
+        if (!response.ok) {
+          router.push('/adminartikelsrigonco/login');
+          return;
+        }
+        setIsAuthenticated(true);
+        fetchArticles();
+      } catch (error) {
+        router.push('/adminartikelsrigonco/login');
+      }
+    };
+    
+    checkAuth();
+  }, [router]);
 
   // Fetch articles
   const fetchArticles = async () => {
@@ -28,46 +47,14 @@ export default function AdminPage() {
     }
   };
 
-  useEffect(() => {
-    fetchArticles();
-  }, []);
-
-  // Create article
-  const handleCreate = async (data: Omit<Article, 'id' | 'slug' | 'publishedAt' | 'updatedAt'>) => {
+  // Logout
+  const handleLogout = async () => {
     try {
-      const response = await fetch('/api/articles', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
-      
-      if (response.ok) {
-        await fetchArticles();
-        setIsModalOpen(false);
-      }
+      await fetch('/api/auth/logout', { method: 'POST' });
+      router.push('/adminartikelsrigonco/login');
+      router.refresh();
     } catch (error) {
-      console.error('Error creating article:', error);
-    }
-  };
-
-  // Update article
-  const handleUpdate = async (data: Omit<Article, 'id' | 'slug' | 'publishedAt' | 'updatedAt'>) => {
-    if (!editingArticle) return;
-    
-    try {
-      const response = await fetch(`/api/articles/${editingArticle.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
-      
-      if (response.ok) {
-        await fetchArticles();
-        setIsModalOpen(false);
-        setEditingArticle(null);
-      }
-    } catch (error) {
-      console.error('Error updating article:', error);
+      console.error('Error logging out:', error);
     }
   };
 
@@ -88,20 +75,9 @@ export default function AdminPage() {
     }
   };
 
-  const openCreateModal = () => {
-    setEditingArticle(null);
-    setIsModalOpen(true);
-  };
-
-  const openEditModal = (article: Article) => {
-    setEditingArticle(article);
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setEditingArticle(null);
-  };
+  if (!isAuthenticated) {
+    return null; // Will redirect in useEffect
+  }
 
   return (
     <>
@@ -114,10 +90,18 @@ export default function AdminPage() {
               <h1 className="text-4xl font-bold text-gray-900">Admin Dashboard</h1>
               <p className="text-gray-600 mt-2">Kelola artikel website Desa Srigonco</p>
             </div>
-            <Button onClick={openCreateModal} variant="primary" size="lg">
-              <PlusIcon className="h-5 w-5 mr-2" />
-              Buat Artikel Baru
-            </Button>
+            <div className="flex items-center space-x-4">
+              <Button onClick={handleLogout} variant="secondary" size="lg">
+                <ArrowRightOnRectangleIcon className="h-5 w-5 mr-2" />
+                Logout
+              </Button>
+              <Link href="/adminartikelsrigonco/artikel/baru">
+                <Button variant="primary" size="lg">
+                  <PlusIcon className="h-5 w-5 mr-2" />
+                  Buat Artikel Baru
+                </Button>
+              </Link>
+            </div>
           </div>
 
           {/* Articles List */}
@@ -128,9 +112,11 @@ export default function AdminPage() {
           ) : articles.length === 0 ? (
             <div className="text-center py-12 border-2 border-dashed border-gray-300 rounded-lg">
               <p className="text-gray-500 text-lg mb-4">Belum ada artikel</p>
-              <Button onClick={openCreateModal} variant="primary">
-                Buat Artikel Pertama
-              </Button>
+              <Link href="/adminartikelsrigonco/artikel/baru">
+                <Button variant="primary">
+                  Buat Artikel Pertama
+                </Button>
+              </Link>
             </div>
           ) : (
             <div className="bg-white border-2 border-gray-200 rounded-lg overflow-hidden">
@@ -168,14 +154,15 @@ export default function AdminPage() {
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex justify-end space-x-2">
-                          <Button
-                            onClick={() => openEditModal(article)}
-                            variant="secondary"
-                            size="sm"
-                          >
-                            <PencilIcon className="h-4 w-4 mr-1" />
-                            Edit
-                          </Button>
+                          <Link href={`/adminartikelsrigonco/artikel/${article.id}/edit`}>
+                            <Button
+                              variant="secondary"
+                              size="sm"
+                            >
+                              <PencilIcon className="h-4 w-4 mr-1" />
+                              Edit
+                            </Button>
+                          </Link>
                           <Button
                             onClick={() => handleDelete(article.id)}
                             variant="danger"
@@ -193,19 +180,6 @@ export default function AdminPage() {
             </div>
           )}
         </div>
-
-        {/* Modal */}
-        <Modal
-          isOpen={isModalOpen}
-          onClose={closeModal}
-          title={editingArticle ? 'Edit Artikel' : 'Buat Artikel Baru'}
-        >
-          <ArticleForm
-            article={editingArticle || undefined}
-            onSubmit={editingArticle ? handleUpdate : handleCreate}
-            onCancel={closeModal}
-          />
-        </Modal>
       </main>
       <Footer />
     </>

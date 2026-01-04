@@ -25,10 +25,10 @@ export function Header() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <Link href="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
-              <Image src="/logo.svg" alt="Logo" width={50} height={50} className="h-12 w-12" />
+              <Image src="/logo.svg" alt="Logo" width={50} height={50} className="h-8 w-8 md:h-12 md:w-12" />
               <div>
-                <h1 className="text-3xl font-bold text-gray-900 tracking-tight">ARTIKEL SRIGONCO</h1>
-                <p className="text-sm text-gray-600 uppercase tracking-wider">Portal Berita Desa</p>
+                <h1 className="text-lg md:text-3xl font-bold text-gray-900 tracking-tight">ARTIKEL SRIGONCO</h1>
+                <p className="text-xs md:text-sm text-gray-600 uppercase tracking-wider">Portal Berita Desa</p>
               </div>
             </Link>
             

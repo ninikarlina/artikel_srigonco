@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getArticleById, updateArticle, deleteArticle } from '@/lib/data';
+import { unlink } from 'fs/promises';
+import path from 'path';
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -8,7 +10,7 @@ interface RouteParams {
 export async function GET(request: Request, { params }: RouteParams) {
   try {
     const { id } = await params;
-    const article = getArticleById(id);
+    const article = await getArticleById(id);
     
     if (!article) {
       return NextResponse.json(
@@ -30,7 +32,7 @@ export async function PUT(request: Request, { params }: RouteParams) {
   try {
     const { id } = await params;
     const data = await request.json();
-    const updated = updateArticle(id, data);
+    const updated = await updateArticle(id, data);
     
     if (!updated) {
       return NextResponse.json(
@@ -51,13 +53,27 @@ export async function PUT(request: Request, { params }: RouteParams) {
 export async function DELETE(request: Request, { params }: RouteParams) {
   try {
     const { id } = await params;
-    const deleted = deleteArticle(id);
+    const deletedArticle = await deleteArticle(id);
     
-    if (!deleted) {
+    if (!deletedArticle) {
       return NextResponse.json(
         { error: 'Article not found' },
         { status: 404 }
       );
+    }
+    
+    // Delete associated image file if it exists
+    if (deletedArticle.imageUrl && deletedArticle.imageUrl.startsWith('/images/articles/')) {
+      try {
+        const filename = deletedArticle.imageUrl.split('/').pop();
+        if (filename) {
+          const filePath = path.join(process.cwd(), 'public', 'images', 'articles', filename);
+          await unlink(filePath);
+        }
+      } catch (fileError) {
+        // Log error but don't fail the request if image deletion fails
+        console.error('Failed to delete image file:', fileError);
+      }
     }
     
     return NextResponse.json({ success: true });
