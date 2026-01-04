@@ -5,6 +5,8 @@ import { Sidebar } from '@/components/ui/Sidebar';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 
+export const dynamic = 'force-dynamic';
+
 export default async function HomePage() {
   const articles = await getArticles();
   const featuredArticles = articles.slice(0, 3);
